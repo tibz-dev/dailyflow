@@ -1,0 +1,7 @@
+{
+  "name": "dailyflow",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
