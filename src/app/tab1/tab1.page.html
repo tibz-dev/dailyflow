@@ -3,3 +3,35 @@
     <ion-title>My Tasks</ion-title>
   </ion-toolbar>
 </ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-list *ngIf="tasks.length > 0">
+    <ion-item-sliding *ngFor="let task of tasks">
+      <ion-item>
+        <ion-checkbox
+          slot="start"
+          [checked]="task.completed"
+          (ionChange)="onToggle(task.id)">
+        </ion-checkbox>
+        <ion-label [class.completed-text]="task.completed">
+          {{ task.name }}
+        </ion-label>
+        <ion-badge [color]="priorityColor(task.priority)" slot="end">
+          {{ task.priority }}
+        </ion-badge>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="confirmDelete(task.id)">
+          Delete
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <div *ngIf="tasks.length === 0" class="ion-text-center ion-padding">
+    <p>No tasks yet. Add one from the "Add Task" tab!</p>
+  </div>
+
+</ion-content>

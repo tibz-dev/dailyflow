@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>DailyFlow</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <div class="ion-text-center ion-margin-top ion-margin-bottom">
+    <ion-icon name="checkmark-done-circle" style="font-size: 64px; color: var(--ion-color-primary);"></ion-icon>
+    <h2>Welcome to DailyFlow</h2>
+    <ion-text color="medium">
+      <p>Track your daily tasks and habits</p>
+    </ion-text>
+  </div>
+
+  <ion-item>
+    <ion-input
+      label="Email"
+      labelPlacement="floating"
+      type="email"
+      [(ngModel)]="email"
+      placeholder="you@example.com">
+    </ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-input
+      label="Password"
+      labelPlacement="floating"
+      type="password"
+      [(ngModel)]="password"
+      placeholder="Enter password">
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+  </ion-item>
+
+  <ion-text color="danger" *ngIf="errorMessage">
+    <p class="ion-padding-start">{{ errorMessage }}</p>
+  </ion-text>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="login()">
+    Log In
+  </ion-button>
+
+</ion-content>

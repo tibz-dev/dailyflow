@@ -3,3 +3,25 @@
     <ion-title>Add Task</ion-title>
   </ion-toolbar>
 </ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <ion-item>
+    <ion-label position="floating">Task Name</ion-label>
+    <ion-input [(ngModel)]="taskName" placeholder="e.g. Drink water"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Priority</ion-label>
+    <ion-select [(ngModel)]="priority">
+      <ion-select-option value="low">Low</ion-select-option>
+      <ion-select-option value="medium">Medium</ion-select-option>
+      <ion-select-option value="high">High</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-button expand="block" class="ion-margin-top" (click)="saveTask()">
+    Save Task
+  </ion-button>
+
+</ion-content>
