@@ -13,6 +13,7 @@ export interface Task {
 })
 export class TaskService {
   private STORAGE_KEY = 'dailyflow_tasks';
+  updateTask: any;
 
   async getTasks(): Promise<Task[]> {
     const { value } = await Preferences.get({ key: this.STORAGE_KEY });
@@ -29,6 +30,10 @@ export class TaskService {
     };
     tasks.push(newTask);
     await Preferences.set({ key: this.STORAGE_KEY, value: JSON.stringify(tasks) });
+  }
+
+  async reorderTasks(tasks: Task[]): Promise<void> {
+  await Preferences.set({ key: this.STORAGE_KEY, value: JSON.stringify(tasks) });
   }
 
   async deleteTask(id: number): Promise<void> {

@@ -1,37 +1,53 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>My Tasks</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleReorderMode()">
+        {{ reorderMode ? 'Done' : 'Reorder' }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Search tasks"
+      [(ngModel)]="searchTerm"
+      (ionInput)="onSearchChange($event)">
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
 
-  <ion-list *ngIf="tasks.length > 0">
-    <ion-item-sliding *ngFor="let task of tasks">
-      <ion-item>
-        <ion-checkbox
-          slot="start"
-          [checked]="task.completed"
-          (ionChange)="onToggle(task.id)">
-        </ion-checkbox>
-        <ion-label [class.completed-text]="task.completed">
-          {{ task.name }}
-        </ion-label>
-        <ion-badge [color]="priorityColor(task.priority)" slot="end">
-          {{ task.priority }}
-        </ion-badge>
-      </ion-item>
+  <ion-list *ngIf="filteredTasks.length > 0">
+    <ion-reorder-group [disabled]="!reorderMode" (ionItemReorder)="handleReorder($event)">
+      <ion-item-sliding *ngFor="let task of filteredTasks">
+        <ion-item button (click)="openTaskOptions(task)">
+          <ion-checkbox
+            slot="start"
+            [checked]="task.completed"
+            (ionChange)="onToggle(task.id)"
+            (click)="$event.stopPropagation()">
+          </ion-checkbox>
+          <ion-label [class.completed-text]="task.completed">
+            {{ task.name }}
+          </ion-label>
+          <ion-badge [color]="priorityColor(task.priority)" slot="end">
+            {{ task.priority }}
+          </ion-badge>
+          <ion-reorder slot="end"></ion-reorder>
+        </ion-item>
 
-      <ion-item-options side="end">
-        <ion-item-option color="danger" (click)="confirmDelete(task.id)">
-          Delete
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="confirmDelete(task.id)">
+            Delete
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-reorder-group>
   </ion-list>
 
-  <div *ngIf="tasks.length === 0" class="ion-text-center ion-padding">
-    <p>No tasks yet. Add one from the "Add Task" tab!</p>
+  <div *ngIf="filteredTasks.length === 0" class="ion-text-center ion-padding">
+    <p>{{ searchTerm ? 'No tasks match your search.' : 'No tasks yet. Add one from the "Add Task" tab!' }}</p>
   </div>
 
 </ion-content>
