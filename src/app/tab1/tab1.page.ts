@@ -5,11 +5,12 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent,
   IonList, IonItem, IonLabel, IonItemSliding,
   IonItemOptions, IonItemOption, IonCheckbox, IonBadge,
-  IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton,
-  AlertController, ModalController, ActionSheetController
+  IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton, IonIcon,
+  AlertController, ModalController, ActionSheetController, PopoverController
 } from '@ionic/angular/standalone';
 import { TaskService, Task } from '../services/task.service';
 import { EditTaskModalComponent } from '../components/edit-task-modal/edit-task-modal.component';
+import { TaskOptionsPopoverComponent } from '../components/task-options-popover/task-options-popover.component';
 
 @Component({
   selector: 'app-tab1',
@@ -21,7 +22,7 @@ import { EditTaskModalComponent } from '../components/edit-task-modal/edit-task-
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonList, IonItem, IonLabel, IonItemSliding,
     IonItemOptions, IonItemOption, IonCheckbox, IonBadge,
-    IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton
+    IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton, IonIcon
   ]
 })
 export class Tab1Page implements OnInit {
@@ -34,7 +35,8 @@ export class Tab1Page implements OnInit {
     private taskService: TaskService,
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private popoverCtrl: PopoverController
   ) {}
 
   async ngOnInit() {
@@ -67,7 +69,6 @@ export class Tab1Page implements OnInit {
   }
 
   async handleReorder(event: any) {
-    // event.detail.complete() reorders the array for us and returns it
     this.filteredTasks = event.detail.complete(this.filteredTasks);
     this.tasks = this.filteredTasks;
     await this.taskService.reorderTasks(this.tasks);
@@ -112,41 +113,45 @@ export class Tab1Page implements OnInit {
   }
 
   async openTaskOptions(task: Task) {
-    if (this.reorderMode) return; // don't open action sheet while reordering
+    if (this.reorderMode) return;
 
     const actionSheet = await this.actionSheetCtrl.create({
       header: task.name,
       buttons: [
-        {
-          text: 'Edit',
-          icon: 'create-outline',
-          handler: () => {
-            this.openEditModal(task);
-          }
-        },
+        { text: 'Edit', icon: 'create-outline', handler: () => this.openEditModal(task) },
         {
           text: task.completed ? 'Mark as Incomplete' : 'Mark as Complete',
           icon: 'checkmark-circle-outline',
-          handler: () => {
-            this.onToggle(task.id);
-          }
+          handler: () => this.onToggle(task.id)
         },
-        {
-          text: 'Delete',
-          icon: 'trash-outline',
-          role: 'destructive',
-          handler: () => {
-            this.confirmDelete(task.id);
-          }
-        },
-        {
-          text: 'Cancel',
-          icon: 'close',
-          role: 'cancel'
-        }
+        { text: 'Delete', icon: 'trash-outline', role: 'destructive', handler: () => this.confirmDelete(task.id) },
+        { text: 'Cancel', icon: 'close', role: 'cancel' }
       ]
     });
     await actionSheet.present();
+  }
+
+  async openHeaderMenu(ev: any) {
+    const popover = await this.popoverCtrl.create({
+      component: TaskOptionsPopoverComponent,
+      event: ev,
+      translucent: true
+    });
+    await popover.present();
+
+    const { data } = await popover.onDidDismiss();
+
+    if (data === 'sortPriority') {
+      const order = { high: 0, medium: 1, low: 2 };
+      this.tasks.sort((a, b) => order[a.priority] - order[b.priority]);
+      await this.taskService.reorderTasks(this.tasks);
+      this.applyFilter();
+    } else if (data === 'clearCompleted') {
+      const remaining = this.tasks.filter(t => !t.completed);
+      this.tasks = remaining;
+      await this.taskService.reorderTasks(remaining);
+      this.applyFilter();
+    }
   }
 
   priorityColor(priority: string): string {

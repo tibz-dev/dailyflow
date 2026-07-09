@@ -32,8 +32,42 @@
     </ion-segment>
   </div>
   <div class="ion-padding">
-      <ion-button expand="block" color="danger" (click)="confirmLogout()">
-        Log Out
-      </ion-button>
+    <ion-label>Help & About</ion-label>
+    <ion-accordion-group class="ion-margin-top">
+
+      <ion-accordion value="what">
+        <ion-item slot="header" color="light">
+          <ion-label>What is DailyFlow?</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          DailyFlow is a personal task and habit tracker. Add tasks, set priorities and due dates, and check them off as you complete them.
+        </div>
+      </ion-accordion>
+
+      <ion-accordion value="storage">
+        <ion-item slot="header" color="light">
+          <ion-label>Where is my data stored?</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          All your tasks are saved locally on your device. Nothing is sent to a server.
+        </div>
+      </ion-accordion>
+
+      <ion-accordion value="version">
+        <ion-item slot="header" color="light">
+          <ion-label>App Version</ion-label>
+        </ion-item>
+        <div class="ion-padding" slot="content">
+          DailyFlow v1.0.0 — built with Ionic + Angular.
+        </div>
+      </ion-accordion>
+
+    </ion-accordion-group>
   </div>
+
+  <div class="ion-padding">
+    <ion-button expand="block" color="danger" (click)="confirmLogout()">
+      Log Out
+    </ion-button>
+  </div> 
 </ion-content>

@@ -6,6 +6,7 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent,
   IonItem, IonLabel, IonToggle, IonList,
   IonSegment, IonSegmentButton, IonButton,
+  IonAccordionGroup, IonAccordion,
   ToastController, AlertController
 } from '@ionic/angular/standalone';
 import { Preferences } from '@capacitor/preferences';
@@ -19,7 +20,8 @@ import { Preferences } from '@capacitor/preferences';
     CommonModule, FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonItem, IonLabel, IonToggle, IonList,
-    IonSegment, IonSegmentButton, IonButton
+    IonSegment, IonSegmentButton, IonButton,
+    IonAccordionGroup, IonAccordion
   ]
 })
 export class Tab3Page implements OnInit {
