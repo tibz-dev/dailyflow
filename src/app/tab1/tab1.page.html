@@ -16,6 +16,7 @@
       [(ngModel)]="searchTerm"
       (ionInput)="onSearchChange($event)">
     </ion-searchbar>
+    
   </ion-toolbar>
 </ion-header>
 
@@ -23,7 +24,7 @@
 
   <ion-list *ngIf="filteredTasks.length > 0">
     <ion-reorder-group [disabled]="!reorderMode" (ionItemReorder)="handleReorder($event)">
-      <ion-item-sliding *ngFor="let task of filteredTasks">
+      <ion-item-sliding *ngFor="let task of displayedTasks">
         <ion-item button (click)="openTaskOptions(task)">
           <ion-checkbox
             slot="start"
@@ -53,4 +54,27 @@
     <p>{{ searchTerm ? 'No tasks match your search.' : 'No tasks yet. Add one from the "Add Task" tab!' }}</p>
   </div>
 
+  <ion-grid class="ion-padding-horizontal ion-padding-top">
+    <ion-row>
+      <ion-col class="ion-text-center">
+        <h2>{{ totalCount }}</h2>
+        <p>Total</p>
+      </ion-col>
+      <ion-col class="ion-text-center">
+        <h2>{{ activeCount }}</h2>
+        <p>Active</p>
+      </ion-col>
+      <ion-col class="ion-text-center">
+        <h2>{{ doneCount }}</h2>
+        <p>Done</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more tasks...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

@@ -1,16 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonHeader, IonToolbar, IonTitle, IonContent,
-  IonList, IonItem, IonLabel, IonItemSliding,
-  IonItemOptions, IonItemOption, IonCheckbox, IonBadge,
-  IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton, IonIcon,
-  AlertController, ModalController, ActionSheetController, PopoverController
-} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonItemSliding, IonItemOptions, IonItemOption, IonCheckbox, IonBadge, IonGrid, IonRow, IonCol, IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton, IonIcon, AlertController, ModalController, ActionSheetController, PopoverController, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { TaskService, Task } from '../services/task.service';
 import { EditTaskModalComponent } from '../components/edit-task-modal/edit-task-modal.component';
 import { TaskOptionsPopoverComponent } from '../components/task-options-popover/task-options-popover.component';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-tab1',
@@ -22,8 +17,13 @@ import { TaskOptionsPopoverComponent } from '../components/task-options-popover/
     IonHeader, IonToolbar, IonTitle, IonContent,
     IonList, IonItem, IonLabel, IonItemSliding,
     IonItemOptions, IonItemOption, IonCheckbox, IonBadge,
-    IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton, IonIcon
-  ]
+    IonSearchbar, IonReorderGroup, IonReorder, IonButtons, IonButton, IonIcon,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonInfiniteScroll,
+    IonInfiniteScrollContent
+]
 })
 export class Tab1Page implements OnInit {
   tasks: Task[] = [];
@@ -39,6 +39,22 @@ export class Tab1Page implements OnInit {
     private popoverCtrl: PopoverController
   ) {}
 
+  displayedTasks: Task[] = [];
+  pageSize = 5;
+
+
+
+loadMore(event: any) {
+  const currentLength = this.displayedTasks.length;
+  const more = this.filteredTasks.slice(currentLength, currentLength + this.pageSize);
+  this.displayedTasks = [...this.displayedTasks, ...more];
+  event.target.complete();
+
+  if (this.displayedTasks.length >= this.filteredTasks.length) {
+    event.target.disabled = true;
+  }
+}
+
   async ngOnInit() {
     await this.loadTasks();
   }
@@ -52,12 +68,21 @@ export class Tab1Page implements OnInit {
     this.applyFilter();
   }
 
+  // applyFilter() {
+  //   const term = this.searchTerm.toLowerCase().trim();
+  //   this.filteredTasks = term
+  //     ? this.tasks.filter(t => t.name.toLowerCase().includes(term))
+  //     : this.tasks;
+  // }
+
   applyFilter() {
-    const term = this.searchTerm.toLowerCase().trim();
-    this.filteredTasks = term
-      ? this.tasks.filter(t => t.name.toLowerCase().includes(term))
-      : this.tasks;
+  const term = this.searchTerm.toLowerCase().trim();
+  this.filteredTasks = term
+    ? this.tasks.filter(t => t.name.toLowerCase().includes(term))
+    : this.tasks;
+  this.displayedTasks = this.filteredTasks.slice(0, this.pageSize);
   }
+
 
   onSearchChange(event: any) {
     this.searchTerm = event.detail.value;
@@ -75,6 +100,7 @@ export class Tab1Page implements OnInit {
   }
 
   async onToggle(id: number) {
+    await Haptics.impact({ style: ImpactStyle.Light });
     await this.taskService.toggleComplete(id);
     await this.loadTasks();
   }
@@ -89,6 +115,7 @@ export class Tab1Page implements OnInit {
           text: 'Delete',
           role: 'destructive',
           handler: async () => {
+            await Haptics.impact({ style: ImpactStyle.Medium });
             await this.taskService.deleteTask(id);
             await this.loadTasks();
           }
@@ -158,5 +185,16 @@ export class Tab1Page implements OnInit {
     if (priority === 'high') return 'danger';
     if (priority === 'medium') return 'warning';
     return 'success';
+  }
+    get totalCount(): number {
+    return this.tasks.length;
+  }
+
+  get activeCount(): number {
+    return this.tasks.filter(t => !t.completed).length;
+  }
+
+  get doneCount(): number {
+    return this.tasks.filter(t => t.completed).length;
   }
 }
